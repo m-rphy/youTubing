@@ -1,32 +1,31 @@
-import express from "express";
-import ffmpeg from "fluent-ffmpeg";
-
+import express, {Response, Request, NextFunction} from "express";
+import { videoProcessing } from "./controllers/videoProcessing";
 
 const app = express();
+app.use(express.json());
 
-// app.get('/', (req, res) => {
-//     res.send('Hello World');
-// })
 
- app.post('/process-video', (req, res) => {
-     
-     const { inputFilePath, outputFilePath} = req.body;
-     
-     if (!inputFilePath || !outputFilePath) {
-         res.status(400).send("Bad Request: Missing file path");
-     }
- 
-     ffmpeg(inputFilePath)
-         .outputOption("-vf", "scale=-1:360") // convert to 360p
-         .on('end', () => {
-             res.status(200).send('File Processing Finished Successfully');
-         })
-         .on('error', (err: any) => {
-             console.log('An error occurred during encoding');
-             res.status(500).send(`Internal Error: ${err.message}`);
-         })
-         .save(outputFilePath);
- });
+// Handle video uploads
+app.post('/process-video', 
+    videoProcessing.processVideo,
+    (req: Request, res: Response) => {
+        res.status(200).json("Successful video encoding");        
+    }
+);
+
+// 404 Error handler
+app.use('/*', (req: Request, res:Response) => {
+    res.status(404).json('Page not found: 404')
+});
+
+// Global Error Handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.log('We have entered the twightlight Zone!');
+    res.locals.message = err.message;
+    console.log('Our error message is: ', err.message);
+    const errorStatus = err.status || 500;
+    return res.status(errorStatus).send(res.locals.message);
+})
 
 const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
