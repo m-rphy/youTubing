@@ -1,5 +1,5 @@
 import express, {Response, Request, NextFunction} from "express";
-import { videoProcessing } from "./controllers/videoProcessing";
+import { processingController } from "./controllers/processingController";
 
 const app = express();
 app.use(express.json());
@@ -7,7 +7,7 @@ app.use(express.json());
 
 // Handle video uploads
 app.post('/process-video', 
-    videoProcessing.processVideo,
+    processingController.reqVidProcessing,
     (req: Request, res: Response) => {
         res.status(200).json("Successful video encoding");        
     }
