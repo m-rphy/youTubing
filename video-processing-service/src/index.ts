@@ -1,12 +1,13 @@
 import express, {Response, Request, NextFunction} from "express";
 import { processingController } from "./controllers/processingController";
+import { pubSubController } from "./controllers/pubSubController";
 
 const app = express();
 app.use(express.json());
 
-
 // Handle video uploads
 app.post('/process-video', 
+    pubSubController.getCloudData,
     processingController.reqVidProcessing,
     (req: Request, res: Response) => {
         res.status(200).json("Successful video encoding");        
