@@ -12,18 +12,18 @@ app.post('/process-video',
     gcsController.download,
     processingController.convert360p,
     gcsController.upload,
-    (req: Request, res: Response) => {
+    (_: Request, res: Response) => {
         res.status(200).json("Successful video encoding");        
     }
 );
 
 // 404 Error handler
-app.use('/*', (req: Request, res:Response) => {
+app.use('/*', (_: Request, res:Response) => {
     res.status(404).json('Page not found: 404')
 });
 
 // Global Error Handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, _: Request, res: Response, __: NextFunction) => {
     console.log('We have entered the twightlight Zone!');
     res.locals.message = err.message;
     console.log('Our error message is: ', err.message);

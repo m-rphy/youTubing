@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { downloadRawVid } from "./gcsControllerHelperFuncs";
 
 const createErr = (errInfo: any) => {
     const { method, status, err } = errInfo;

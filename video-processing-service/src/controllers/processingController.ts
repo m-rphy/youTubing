@@ -18,7 +18,7 @@ export const processingController = {
 
     // handler for processing videos in request body
     // TODO - Correct the fie paths from res.locals
-    convert360p: async (req: Request, res: Response, next: NextFunction) => {
+    convert360p: async (_: Request, res: Response, next: NextFunction) => {
 
         const { inputFileName, outputFileName } = res.locals;
 

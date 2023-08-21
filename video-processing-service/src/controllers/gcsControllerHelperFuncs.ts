@@ -2,13 +2,16 @@ import { Storage } from "@google-cloud/storage";
 import fs from 'fs';
 import { convertVideo } from "./processingController";
 
-// Interacting with google cloud storage
-// and local file interactions
+/**
+ * This file has helper functions that 
+ * enable controllers to interact with 
+ * Google-Cloud Storage and local files
+ */
 
-// instance of GCS
+// new Instance of Google-Cloud Storage (GCS)
 const storage = new Storage();
 
-// have to be globally unique name GCS
+// Must have to be globally unique name on GCS
 const rawVidBucket = 'youTubing-raw-videos';
 const procVidBucket = 'youTubing-proc-videos';
 
