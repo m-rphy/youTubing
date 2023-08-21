@@ -26,7 +26,7 @@ export const processingController = {
                 err: 'error: Invalid file path/s',
                 type: 400
             });
-        }
+        };
 
         try {
             await convertVideo(inputFilePath, outputFilePath);
