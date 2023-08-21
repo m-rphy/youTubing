@@ -30,19 +30,8 @@ export const processingController = {
         }
 
         try {
-            const result = await convertVideo(inputFilePath, outputFilePath);
-
-            if (result === true) {
-                return next();
-            } 
-
-            else {
-                throw {
-                    method: 'reqVidProcessing',
-                    message: 'error: Un-recognized return from conversion process',
-                    type: 500
-                };
-            }
+            await convertVideo(inputFilePath, outputFilePath);
+            return next();
 
         } catch(err) {
             return next(createErr({
@@ -55,17 +44,18 @@ export const processingController = {
 };
 
 // helper function for converted video
-export const convertVideo = (inputFilePath: string, outputFilePath: string): (boolean | Error) => {
-
-    ffmpeg(inputFilePath)
-    .outputOption("-vf", "scale=-1:360") // convert to 360p
-    .on('end', () => {
-        return true;
+export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
+    return new Promise<void>((resolve, reject)=> {
+        ffmpeg(inputFilePath)
+        .outputOption("-vf", "scale=-1:360") // convert to 360p
+        .on('end', () => {
+            console.log('Processing finished successfully');
+            resolve();
+        })
+        .on('error', (err: any) => {
+            console.log('error: Error while processing video');
+            reject(err);
+        })
+        .save(outputFilePath);
     })
-    .on('error', (err: any) => {
-        return new Error ('error: Error while processing video');
-    })
-    .save(outputFilePath);
-
-    return true;
 };
