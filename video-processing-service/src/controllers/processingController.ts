@@ -1,5 +1,6 @@
 import ffmpeg from "fluent-ffmpeg";
 import { Response, Request, NextFunction } from "express";
+import { deleteRawVideo } from "./gcsControllerHelperFuncs";
 
 // helper function to create fileController error objects
 // return value will be the object we pass into next, invoking global error handler
@@ -16,23 +17,19 @@ const createErr = (errInfo: any) => {
 export const processingController = {
 
     // handler for processing videos in request body
-    reqVidProcessing: async (req: Request, res: Response, next: NextFunction) => {
+    // TODO - Correct the fie paths from res.locals
+    convert360p: async (req: Request, res: Response, next: NextFunction) => {
 
-        const { inputFilePath, outputFilePath} = req.body;
-
-        if (!inputFilePath || !outputFilePath) {
-            return next( {
-                method: 'reqVidProcessing',
-                err: 'error: Invalid file path/s',
-                type: 400
-            });
-        };
+        const { inputFileName, outputFileName } = res.locals;
 
         try {
-            await convertVideo(inputFilePath, outputFilePath);
+            // TODO - make sure that these file paths are correct
+            await convertVideo(inputFileName, outputFileName);
             return next();
 
         } catch(err) {
+            // TODO - delete raw and processed files
+            // before returning an error
             return next(createErr({
                 method: `videoProcessingController.videoProcessing`, 
                 message: 'an error occured while processing the video with FFMpeg',
