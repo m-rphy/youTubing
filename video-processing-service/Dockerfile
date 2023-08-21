@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build
 
 
-# Stage 2 : Proction Stage
+# Stage 2 : Production Stage
 FROM node:18
 
 RUN apt-get update && apt-get install -y ffmpeg
