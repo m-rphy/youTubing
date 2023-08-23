@@ -12,6 +12,7 @@ app.post('/process-video',
     gcsController.download,
     processingController.convert360p,
     gcsController.upload,
+    processingController.deleteFiles,
     (_: Request, res: Response) => {
         res.status(200).json("Successful video encoding");        
     }

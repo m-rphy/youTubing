@@ -6,8 +6,8 @@
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types", "./src/typings"]
+    "typeRoots": ["./node_modules/@types", "./globals.d.ts"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "globals.d.ts"],
   "exclude": ["node_modules"]
 }

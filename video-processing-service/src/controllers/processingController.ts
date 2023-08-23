@@ -1,6 +1,6 @@
 import ffmpeg from "fluent-ffmpeg";
 import { Response, Request, NextFunction } from "express";
-import { deleteRawVideo } from "./gcsControllerHelperFuncs";
+import { deletePrcVideo, deleteRawVideo } from "./gcsControllerHelperFuncs";
 
 // helper function to create fileController error objects
 // return value will be the object we pass into next, invoking global error handler
@@ -28,15 +28,37 @@ export const processingController = {
             return next();
 
         } catch(err) {
-            // TODO - delete raw and processed files
-            // before returning an error
+            
+            await Promise.all([
+                deletePrcVideo(outputFileName),
+                deleteRawVideo(inputFileName)
+            ]);
+
             return next(createErr({
-                method: `videoProcessingController.videoProcessing`, 
+                method: `processingController.videoProcessing`, 
                 message: 'an error occured while processing the video with FFMpeg',
                 status: 500,
             }));
         };
     },
+
+    deleteFiles: async (_: Request, res: Response, next: NextFunction) => {
+
+        const { inputFileName, outputFileName } = res.locals;
+
+        try {
+            await Promise.all([
+                deletePrcVideo(outputFileName),
+                deleteRawVideo(inputFileName)
+            ]);
+        } catch (error) {
+            return next(createErr({
+                method: `processingController.deleteFiles`, 
+                message: 'an error occured while deleting local Video files',
+                status: 500,
+            }));
+        }
+    }
 };
 
 // helper function for converted video
