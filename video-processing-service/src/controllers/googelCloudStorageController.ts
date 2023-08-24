@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { deletePrcVideo, deleteRawVideo, downloadRawVid, uploadProcVid } from "./gcsControllerHelperFuncs";
+import { deleteProcessedVideo, deleteRawVideo, downloadRawVid, uploadProcVid } from "./gcsControllerUtils";
 import { createErr } from "../helperFunction";
 
-export const gcsController = {
+export const googleCoudStorageController = {
     download: async (_: Request, res: Response, next: NextFunction) => {
         
         const {outputFileName, inputFileName } = res.locals;
@@ -11,18 +11,18 @@ export const gcsController = {
            await downloadRawVid(inputFileName);
            return next()
         } catch (err) {
-           await Promise.all([
-               deletePrcVideo(outputFileName),
-               deleteRawVideo(inputFileName)
-           ]);
-           // TODO
-           return next(createErr({
+            await Promise.all([
+                deleteProcessedVideo(outputFileName),
+                deleteRawVideo(inputFileName)
+            ]);
+            return next(createErr({
                 method: 'gcsController.download',
                 message: 'error: Could not download files from Google-Cloud Storage',
                 status: 500,
                 err,
-           }));
-        }
+                })
+            );
+        };
     },
 
     upload: async (_: Request, res: Response, next: NextFunction) => {
@@ -34,17 +34,17 @@ export const gcsController = {
            await uploadProcVid(outputFileName);
            return next()
         } catch (err) {
-           await Promise.all([
-               deletePrcVideo(outputFileName),
-               deleteRawVideo(inputFileName)
-           ]);
-           return next(createErr({
-            method: 'gcsController.upload',
-            message: 'error: Could not upload files to Google-Cloud Storage',
-            status: 500,
-            err,
-       }));;
-        }
-    },
-    
-}
+            await Promise.all([
+                deleteProcessedVideo(outputFileName),
+                deleteRawVideo(inputFileName)
+            ]);
+            return next(createErr({
+                method: 'gcsController.upload',
+                message: 'error: Could not upload files to Google-Cloud Storage',
+                status: 500,
+                err,
+                })
+            );
+        };
+    },  
+};

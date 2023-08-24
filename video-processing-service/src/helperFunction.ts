@@ -5,7 +5,7 @@
 export const createErr = (errInfo: any) => {
     const { method, status, err, message } = errInfo;
     return { 
-      log: `fileController.${method} ${status}: ERROR: ${err}`,
+      log: `${method} ${status}: ERROR: ${err}`,
       message: message,
       status,
       err

@@ -1,15 +1,13 @@
 import Ffmpeg from "fluent-ffmpeg";
-import { Response, Request, NextFunction } from "express";
-import { deletePrcVideo, deleteRawVideo } from "./gcsControllerHelperFuncs";
 import path from "path";
+import { Response, Request, NextFunction } from "express";
+import { deleteProcessedVideo, deleteRawVideo } from "./gcsControllerUtils";
 import { createErr } from "../helperFunction";
 
 // Middleware responsible for processing video 
 export const processingController = {
 
-    // handler for processing videos in request body
-    // TODO - Correct the fie paths from res.locals
-    convert360p: async (req: Request, res: Response, next: NextFunction) => {
+    convert360p: async (_: Request, res: Response, next: NextFunction) => {
 
         const { inputFileName, outputFileName } = res.locals;
 
@@ -21,7 +19,7 @@ export const processingController = {
         } catch(err) {
             
             await Promise.all([
-                deletePrcVideo(outputFileName),
+                deleteProcessedVideo(outputFileName),
                 deleteRawVideo(inputFileName)
             ]);
 
@@ -33,21 +31,14 @@ export const processingController = {
             }));
         };
     },
-    /**
-     * 
-     * @param _ empty request
-     * @param res response object
-     * @param next NextFunctio
-     * @returns void -> deletes local files downloaded from Google-Cloud Storage
-     */
+
     deleteFiles: async (_: Request, res: Response, next: NextFunction) => {
 
         const { inputFileName, outputFileName } = res.locals;
         
-
         try {
             await Promise.all([
-                deletePrcVideo(outputFileName),
+                deleteProcessedVideo(outputFileName),
                 deleteRawVideo(inputFileName)
             ]);
         } catch (err) {
@@ -56,15 +47,14 @@ export const processingController = {
                 message: 'an error occured while deleting local Video files',
                 status: 500,
                 err,
-            }));
-        }
+                })
+            );
+        };
     }
 };
 
 // helper function for converted video
 export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
-    
-    console.log(inputFilePath, outputFilePath)
     
     return new Promise<void>((resolve, reject)=> {
         Ffmpeg(path.resolve(__dirname, inputFilePath))
@@ -78,5 +68,5 @@ export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
             reject(err);
         })
         .save(path.resolve(__dirname, outputFilePath));
-    })
+    });
 };

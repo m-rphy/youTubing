@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { createErr } from "../helperFunction";
+import { setupLocalDirs } from "./gcsControllerUtils";
 
 export const pubSubController = {
     getCloudData: (req: Request, res: Response, next: NextFunction) => {
@@ -16,13 +17,15 @@ export const pubSubController = {
                     message: 'Error not key name on found in file for Google-Cloud Storage',
                     err: 'error: data.name not found',
                 }));
-            }
+            };
+            
             const inputFileName = data.name;
             const outputFileName = `processed-${inputFileName}`
 
-            // download the raw video from Cloud Storage
             res.locals.inputFileName = inputFileName;
             res.locals.outputFileName = outputFileName
+
+            setupLocalDirs();
 
             return next()
 

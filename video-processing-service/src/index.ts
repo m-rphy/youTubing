@@ -1,7 +1,7 @@
 import express, {Response, Request, NextFunction} from "express";
 import { processingController } from "./controllers/processingController";
 import { pubSubController } from "./controllers/pubSubController";
-import { gcsController } from "./controllers/gcsController";
+import { googleCoudStorageController } from "./controllers/googelCloudStorageController";
 
 const app = express();
 app.use(express.json());
@@ -9,9 +9,9 @@ app.use(express.json());
 // Handle video uploads
 app.post('/process-video', 
     pubSubController.getCloudData,
-    gcsController.download,
+    googleCoudStorageController.download,
     processingController.convert360p,
-    gcsController.upload,
+    googleCoudStorageController.upload,
     processingController.deleteFiles,
     (_: Request, res: Response) => {
         res.status(200).json("Successful video encoding");        
