@@ -1,13 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
-const createErr = (errInfo: any) => {
-    const { method, status, err } = errInfo;
-    return { 
-      log: `fileController.${method} ${status}: ERROR: ${JSON.stringify(err)}`,
-      message: { err: `Error occurred in fileController.${method}. Check server logs for more details.` },
-      status,
-    };
-  };
+import { createErr } from "../helperFunction";
 
 export const pubSubController = {
     getCloudData: (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +13,8 @@ export const pubSubController = {
                 return next(createErr({
                     method: 'pubSubController.getCloudData',
                     status: 400,
-                    err: new Error('No "name" key on data object'),
+                    message: 'Error not key name on found in file for Google-Cloud Storage',
+                    err: 'error: data.name not found',
                 }));
             }
             const inputFileName = data.name;
@@ -38,6 +31,7 @@ export const pubSubController = {
             return next(createErr({
                 method: 'pubSubController.getCloudData',
                 status: 500,
+                message: 'Error in buffer from Goolge-Cloud Storage',
                 err,
             }))
         }

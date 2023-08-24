@@ -1,6 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import fs from 'fs';
 import { convertVideo } from "./processingController";
+import path from "path";
 
 /**
  * This file has helper functions that 
@@ -16,8 +17,8 @@ const rawVidBucket = 'youTubing-raw-videos';
 const procVidBucket = 'youTubing-proc-videos';
 
 // local paths
-const localRawVidPath = './raw-videos';
-const localProcVidPath = './proc-videos';
+const localRawVidPath = path.resolve(__dirname,'./raw-videos');
+const localProcVidPath = path.resolve(__dirname,'./proc-videos');
 
 /*
 * Creates the local directories for raw and processed videos
@@ -27,6 +28,24 @@ export const setupDirs = () => {
     ensureDirExist(localProcVidPath);
 };
 
+/**
+ * 
+ * @param dirPath - The directory path to check
+ */
+const ensureDirExist = (dirPath: string): void => {
+    if (!fs.existsSync(dirPath)) {
+        // recursive enables making nested directories
+        fs.mkdirSync(dirPath, {recursive: true}); 
+        console.log(`Directory created a ${dirPath}`);
+    }
+}
+
+/**
+ * 
+ * @param rawVidName the 1080p video name (string)
+ * @param procVidName teh 360p video name (string)
+ * @returns void, but saves the video locally
+ */
 export const convertAndSaveVidLocally =  (rawVidName: string, procVidName: string) => {
     try{
         convertVideo(`${localRawVidPath}/${rawVidName}`,`${localProcVidPath}/${procVidName}`);
@@ -116,16 +135,4 @@ export const deleteRawVideo = (filename: string) => {
  */
 export const deletePrcVideo = (filename: string) => {
     return deleteFile(`${localProcVidPath}/${filename}`)
-}
-
-/**
- * 
- * @param dirPath - The directory path to check
- */
-const ensureDirExist = (dirPath: string): void => {
-    if (!fs.existsSync(dirPath)) {
-        // recursive enables making nested directories
-        fs.mkdirSync(dirPath, {recursive: true}); 
-        console.log(`Directory created a ${dirPath}`);
-    }
 }

@@ -26,10 +26,9 @@ app.use('/*', (_: Request, res:Response) => {
 // Global Error Handler
 app.use((err: any, _: Request, res: Response, __: NextFunction) => {
     console.log('We have entered the twightlight Zone!');
-    res.locals.message = err.message;
-    console.log('Our error message is: ', err.message);
+    console.log('Our error message is: ', err);
     const errorStatus = err.status || 500;
-    return res.status(errorStatus).send(res.locals.message);
+    return res.status(errorStatus).send(err);
 })
 
 const PORT = process.env.PORT || 3030;

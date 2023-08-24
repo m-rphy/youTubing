@@ -1,24 +1,15 @@
-import ffmpeg from "fluent-ffmpeg";
+import Ffmpeg from "fluent-ffmpeg";
 import { Response, Request, NextFunction } from "express";
 import { deletePrcVideo, deleteRawVideo } from "./gcsControllerHelperFuncs";
-
-// helper function to create fileController error objects
-// return value will be the object we pass into next, invoking global error handler
-const createErr = (errInfo: any) => {
-  const { method, status, err } = errInfo;
-  return { 
-    log: `fileController.${method} ${status}: ERROR: ${JSON.stringify(err)}`,
-    message: { err: `Error occurred in fileController.${method}. Check server logs for more details.` },
-    status,
-  };
-};
+import path from "path";
+import { createErr } from "../helperFunction";
 
 // Middleware responsible for processing video 
 export const processingController = {
 
     // handler for processing videos in request body
     // TODO - Correct the fie paths from res.locals
-    convert360p: async (_: Request, res: Response, next: NextFunction) => {
+    convert360p: async (req: Request, res: Response, next: NextFunction) => {
 
         const { inputFileName, outputFileName } = res.locals;
 
@@ -38,24 +29,33 @@ export const processingController = {
                 method: `processingController.videoProcessing`, 
                 message: 'an error occured while processing the video with FFMpeg',
                 status: 500,
+                err,
             }));
         };
     },
-
+    /**
+     * 
+     * @param _ empty request
+     * @param res response object
+     * @param next NextFunctio
+     * @returns void -> deletes local files downloaded from Google-Cloud Storage
+     */
     deleteFiles: async (_: Request, res: Response, next: NextFunction) => {
 
         const { inputFileName, outputFileName } = res.locals;
+        
 
         try {
             await Promise.all([
                 deletePrcVideo(outputFileName),
                 deleteRawVideo(inputFileName)
             ]);
-        } catch (error) {
+        } catch (err) {
             return next(createErr({
                 method: `processingController.deleteFiles`, 
                 message: 'an error occured while deleting local Video files',
                 status: 500,
+                err,
             }));
         }
     }
@@ -63,9 +63,12 @@ export const processingController = {
 
 // helper function for converted video
 export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
+    
+    console.log(inputFilePath, outputFilePath)
+    
     return new Promise<void>((resolve, reject)=> {
-        ffmpeg(inputFilePath)
-        .outputOption("-vf", "scale=-1:360") // convert to 360p
+        Ffmpeg(path.resolve(__dirname, inputFilePath))
+        .outputOption('-vf', 'scale=-1:360,  pad=ceil(iw/2)*2:ceil(ih/2)*2') // convert to 360p
         .on('end', () => {
             console.log('Processing finished successfully');
             resolve();
@@ -74,6 +77,6 @@ export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
             console.log('error: Error while processing video');
             reject(err);
         })
-        .save(outputFilePath);
+        .save(path.resolve(__dirname, outputFilePath));
     })
 };

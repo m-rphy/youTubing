@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { deletePrcVideo, deleteRawVideo, downloadRawVid, uploadProcVid } from "./gcsControllerHelperFuncs";
+import { createErr } from "../helperFunction";
 
 export const gcsController = {
     download: async (_: Request, res: Response, next: NextFunction) => {
@@ -14,7 +15,13 @@ export const gcsController = {
                deletePrcVideo(outputFileName),
                deleteRawVideo(inputFileName)
            ]);
-           return next(new Error('Error in gcsController.download'));
+           // TODO
+           return next(createErr({
+                method: 'gcsController.download',
+                message: 'error: Could not download files from Google-Cloud Storage',
+                status: 500,
+                err,
+           }));
         }
     },
 
@@ -31,7 +38,12 @@ export const gcsController = {
                deletePrcVideo(outputFileName),
                deleteRawVideo(inputFileName)
            ]);
-           return next(new Error('Error in gcsController.upload'));
+           return next(createErr({
+            method: 'gcsController.upload',
+            message: 'error: Could not upload files to Google-Cloud Storage',
+            status: 500,
+            err,
+       }));;
         }
     },
     
