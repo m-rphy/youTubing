@@ -102,4 +102,3 @@ const deleteFile = (filePath: string): Promise<void> => {
         }
     })
 };
-
