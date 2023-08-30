@@ -58,15 +58,15 @@ export const convertVideo = (inputFilePath: string, outputFilePath: string) => {
     
     return new Promise<void>((resolve, reject)=> {
         Ffmpeg(path.resolve(__dirname, inputFilePath))
-        .outputOption('-vf', 'scale=-1:360,  pad=ceil(iw/2)*2:ceil(ih/2)*2') // convert to 360p
-        .on('end', () => {
-            console.log('Processing finished successfully');
-            resolve();
-        })
-        .on('error', (err: any) => {
-            console.log('error: Error while processing video');
-            reject(err);
-        })
-        .save(path.resolve(__dirname, outputFilePath));
+            .outputOption('-vf', 'scale=-1:360,  pad=ceil(iw/2)*2:ceil(ih/2)*2') // convert to 360p
+            .on('end', () => {
+                console.log('Processing finished successfully');
+                resolve();
+            })
+            .on('error', (err: any) => {
+                console.log('error: Error while processing video');
+                reject(err);
+            })
+            .save(path.resolve(__dirname, outputFilePath));
     });
 };
