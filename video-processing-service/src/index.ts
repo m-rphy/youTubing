@@ -6,6 +6,10 @@ import { googleCoudStorageController } from "./controllers/googelCloudStorageCon
 const app = express();
 app.use(express.json());
 
+app.use('/', (_: Request, res: Response) => {
+    res.status(200).json('Hello World');
+})
+
 // Handle video uploads
 app.post('/process-video', 
     pubSubController.getCloudData,
