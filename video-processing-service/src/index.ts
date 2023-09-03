@@ -33,9 +33,9 @@ app.use((err: any, _: Request, res: Response, __: NextFunction) => {
     console.log('Our error message is: ', err);
     const errorStatus = err.status || 500;
     return res.status(errorStatus).send(err);
-})
+});
 
 const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`Beep Boop: listening on port ${PORT}`);
-})
+});
