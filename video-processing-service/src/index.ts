@@ -6,7 +6,7 @@ import { googleCoudStorageController } from "./controllers/googelCloudStorageCon
 const app = express();
 app.use(express.json());
 
-app.use('/', (_: Request, res: Response) => {
+app.get('/', (_: Request, res: Response) => {
     res.status(200).json('Hello World');
 })
 
